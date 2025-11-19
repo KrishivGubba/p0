@@ -1,9 +1,24 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navigation from './components/Navigation';
+import Home from './pages/Home';
+import StudySpots from './pages/StudySpots';
+import SpotDetail from './pages/SpotDetail';
+import About from './pages/About';
+import './App.css';
+
 function App() {
   return (
-    <div>
-      <h1>Hello Badgers 🦡</h1>
-      <p>This is my CS 571 initial publish proof of concept!</p>
-    </div>
+    <Router basename="/p0">
+      <div className="App">
+        <Navigation />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/spots" element={<StudySpots />} />
+          <Route path="/spots/:id" element={<SpotDetail />} />
+          <Route path="/about" element={<About />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
