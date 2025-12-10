@@ -2,6 +2,11 @@ import { Container, Row, Col, Badge, Button, Card } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import { studySpots } from '../data/studySpots';
 import RatingDisplay from '../components/RatingDisplay';
+import NoiseLevelBadge from '../components/NoiseLevelBadge';
+import ReviewCard from '../components/ReviewCard';
+import Footer from '../components/Footer';
+import AmenityBadge from '../components/AmenityBadge';
+import InfoCard from '../components/InfoCard';
 
 function SpotDetail() {
   const { id } = useParams();
@@ -11,7 +16,8 @@ function SpotDetail() {
   if (!spot) {
     return (
       <Container className="page-container text-center">
-        <h2>Study Spot Not Found</h2>
+        <h1>Study Spot Not Found</h1>
+        <p>The study spot you're looking for doesn't exist.</p>
         <Button variant="danger" onClick={() => navigate('/spots')}>
           Back to All Spots
         </Button>
@@ -19,137 +25,115 @@ function SpotDetail() {
     );
   }
 
-  const getNoiseBadgeClass = (level) => {
-    switch(level) {
-      case 'quiet': return 'noise-quiet';
-      case 'moderate': return 'noise-moderate';
-      case 'lively': return 'noise-lively';
-      default: return '';
-    }
-  };
-
   return (
     <div className="page-container">
-      <Container>
-        <Button 
-          variant="outline-secondary" 
-          className="mb-3"
-          onClick={() => navigate('/spots')}
-        >
-          ← Back to All Spots
-        </Button>
+      <main>
+        <Container>
+          <Button 
+            variant="outline-secondary" 
+            className="mb-3"
+            onClick={() => navigate('/spots')}
+          >
+            ← Back to All Spots
+          </Button>
 
-        <div className="detail-header">
-          <Row>
-            <Col>
-              <h1>{spot.name}</h1>
-              <h4 className="text-muted">{spot.building}</h4>
-              <div className="mt-3">
-                <Badge 
-                  className={`noise-badge ${getNoiseBadgeClass(spot.noiseLevel)} me-2`}
-                >
-                  {spot.noiseLevel.charAt(0).toUpperCase() + spot.noiseLevel.slice(1)}
-                </Badge>
-                {spot.accessibility && (
-                  <Badge bg="info">♿ Accessible</Badge>
-                )}
-              </div>
-            </Col>
-          </Row>
-        </div>
-
-        <Row>
-          <Col md={8}>
-            <img 
-              src={spot.image} 
-              alt={spot.name}
-              className="detail-image"
-            />
-
-            <Card className="mb-4">
-              <Card.Body>
-                <h3>About This Location</h3>
-                <p>{spot.description}</p>
-              </Card.Body>
-            </Card>
-
-            <Card className="mb-4">
-              <Card.Body>
-                <h3>Reviews</h3>
-                <div className="mb-3">
-                  <RatingDisplay rating={spot.rating} size="lg" />
-                  <p className="text-muted mt-2">
-                    Based on {spot.reviews.length} review{spot.reviews.length !== 1 ? 's' : ''}
-                  </p>
+          <header className="detail-header">
+            <Row>
+              <Col>
+                <h1>{spot.name}</h1>
+                <p className="lead text-muted">{spot.building}</p>
+                <div className="mt-3">
+                  <NoiseLevelBadge level={spot.noiseLevel} />
+                  {spot.accessibility && (
+                    <Badge bg="info" className="ms-2">
+                      <span aria-hidden="true">♿</span> Accessible
+                    </Badge>
+                  )}
                 </div>
-                
-                {spot.reviews.map((review, index) => (
-                  <div key={index} className="review-card">
-                    <div className="d-flex justify-content-between align-items-start mb-2">
-                      <strong>{review.user}</strong>
-                      <RatingDisplay rating={review.rating} />
-                    </div>
-                    <p className="mb-0">{review.comment}</p>
-                  </div>
-                ))}
-              </Card.Body>
-            </Card>
-          </Col>
+              </Col>
+            </Row>
+          </header>
 
-          <Col md={4}>
-            <Card className="mb-4">
-              <Card.Body>
-                <h5>Amenities</h5>
+          <Row>
+            <Col md={8}>
+              <img 
+                src={spot.image} 
+                alt={`Interior view of ${spot.name} study area in ${spot.building}, showing the seating arrangement and study environment`}
+                className="detail-image"
+              />
+
+              <Card className="mb-4">
+                <Card.Body>
+                  <h2>About This Location</h2>
+                  <p>{spot.description}</p>
+                </Card.Body>
+              </Card>
+
+              <Card className="mb-4">
+                <Card.Body>
+                  <h2>Reviews</h2>
+                  <div className="mb-3">
+                    <RatingDisplay rating={spot.rating} size="lg" />
+                    <p className="text-muted mt-2">
+                      Based on {spot.reviews.length} review{spot.reviews.length !== 1 ? 's' : ''}
+                    </p>
+                  </div>
+                  
+                  {spot.reviews.map((review, index) => (
+                    <ReviewCard key={index} review={review} />
+                  ))}
+                </Card.Body>
+              </Card>
+            </Col>
+
+            <Col md={4}>
+              <InfoCard title="Amenities">
                 <div className="amenities-list">
                   {spot.amenities.map((amenity, index) => (
-                    <Badge key={index} bg="secondary" className="amenity-badge">
-                      {amenity}
-                    </Badge>
+                    <AmenityBadge key={index} amenity={amenity} />
                   ))}
                 </div>
-              </Card.Body>
-            </Card>
+              </InfoCard>
 
-            <Card className="mb-4">
-              <Card.Body>
-                <h5>Peak Hours</h5>
+              <InfoCard title="Peak Hours">
                 <p className="mb-0">
-                  <strong>⏰ {spot.peakHours}</strong>
+                  <strong><span aria-hidden="true">⏰</span> {spot.peakHours}</strong>
                 </p>
                 <small className="text-muted">
                   Try visiting outside peak hours for less crowding
                 </small>
-              </Card.Body>
-            </Card>
+              </InfoCard>
 
-            <Card className="mb-4">
-              <Card.Body>
-                <h5>Quick Info</h5>
-                <ul className="list-unstyled">
-                  <li className="mb-2">
-                    <strong>Noise Level:</strong> {spot.noiseLevel.charAt(0).toUpperCase() + spot.noiseLevel.slice(1)}
-                  </li>
-                  <li className="mb-2">
-                    <strong>Rating:</strong> {spot.rating.toFixed(1)}/5.0
-                  </li>
-                  <li className="mb-2">
-                    <strong>Accessible:</strong> {spot.accessibility ? 'Yes' : 'No'}
-                  </li>
-                </ul>
-              </Card.Body>
-            </Card>
+              <InfoCard title="Quick Info">
+                <dl className="mb-0">
+                  <div className="mb-2">
+                    <dt className="d-inline">Noise Level: </dt>
+                    <dd className="d-inline">{spot.noiseLevel.charAt(0).toUpperCase() + spot.noiseLevel.slice(1)}</dd>
+                  </div>
+                  <div className="mb-2">
+                    <dt className="d-inline">Rating: </dt>
+                    <dd className="d-inline">{spot.rating.toFixed(1)}/5.0</dd>
+                  </div>
+                  <div className="mb-2">
+                    <dt className="d-inline">Accessible: </dt>
+                    <dd className="d-inline">{spot.accessibility ? 'Yes' : 'No'}</dd>
+                  </div>
+                </dl>
+              </InfoCard>
 
-            <div className="d-grid gap-2">
-              <Button variant="danger" size="lg">
-                ⭐ Bookmark This Spot
-              </Button>
-              <Button variant="outline-danger" size="lg">
-                📝 Write a Review
-              </Button>
-            </div>
-          </Col>
-        </Row>
-      </Container>
+              <div className="d-grid gap-2">
+                <Button variant="danger" size="lg">
+                  <span aria-hidden="true">⭐</span> Bookmark This Spot
+                </Button>
+                <Button variant="outline-danger" size="lg">
+                  <span aria-hidden="true">📝</span> Write a Review
+                </Button>
+              </div>
+            </Col>
+          </Row>
+        </Container>
+      </main>
+      <Footer />
     </div>
   );
 }

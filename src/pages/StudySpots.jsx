@@ -4,6 +4,8 @@ import { studySpots } from '../data/studySpots';
 import StudySpotCard from '../components/StudySpotCard';
 import FilterBar from '../components/FilterBar';
 import SearchBar from '../components/SearchBar';
+import Footer from '../components/Footer';
+import PageHeader from '../components/PageHeader';
 
 function StudySpots() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -56,41 +58,48 @@ function StudySpots() {
 
   return (
     <div className="page-container">
-      <Container>
-        <h1 className="mb-4">All Study Spots</h1>
-        
-        <SearchBar 
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-        />
+      <PageHeader 
+        title="All Study Spots" 
+        subtitle="Browse and filter study locations across UW-Madison campus"
+      />
+      <main>
+        <Container>
+          <SearchBar 
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
 
-        <FilterBar 
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onClearFilters={handleClearFilters}
-        />
+          <FilterBar 
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onClearFilters={handleClearFilters}
+          />
 
-        <div className="mb-3">
-          <p className="text-muted">
-            Showing {filteredSpots.length} of {studySpots.length} study spots
-          </p>
-        </div>
-
-        {filteredSpots.length === 0 ? (
-          <div className="text-center py-5">
-            <h3>No study spots found</h3>
-            <p className="text-muted">Try adjusting your filters or search terms</p>
+          <div className="mb-3" role="status" aria-live="polite">
+            <p className="text-muted">
+              Showing {filteredSpots.length} of {studySpots.length} study spots
+            </p>
           </div>
-        ) : (
-          <Row className="g-4">
-            {filteredSpots.map(spot => (
-              <Col key={spot.id} md={6} lg={4}>
-                <StudySpotCard spot={spot} />
-              </Col>
-            ))}
-          </Row>
-        )}
-      </Container>
+
+          {filteredSpots.length === 0 ? (
+            <div className="text-center py-5">
+              <h2>No study spots found</h2>
+              <p className="text-muted">Try adjusting your filters or search terms</p>
+            </div>
+          ) : (
+            <section aria-label="Study spots list">
+              <Row className="g-4">
+                {filteredSpots.map(spot => (
+                  <Col key={spot.id} md={6} lg={4}>
+                    <StudySpotCard spot={spot} />
+                  </Col>
+                ))}
+              </Row>
+            </section>
+          )}
+        </Container>
+      </main>
+      <Footer />
     </div>
   );
 }
